@@ -9,17 +9,19 @@ func Prereq() bool {
 	test := "this is a test"
 	wokka := "wokka wokka!!!"
 	expected := 37
-	aa, _ := hex.DecodeString(hex.EncodeToString([]byte(test)))
-	bb, _ := hex.DecodeString(hex.EncodeToString([]byte(wokka)))
 
-	fmt.Printf("test:     %x\n", aa)
-	fmt.Printf("woka:     %x\n", bb)
-	fmt.Printf("Hamming Distance: %v\n", calculateHammingDistance(aa, bb))
-	if calculateHammingDistance(aa, bb) == expected {
+	fmt.Printf("Hamming Distance: %v\n", calculateHammingDistanceForStrings(test, wokka))
+	if calculateHammingDistanceForStrings(test, wokka) == expected {
 		return true
 	} else {
 		return false
 	}
+}
+
+func calculateHammingDistanceForStrings(a, b string) int {
+	aa, _ := hex.DecodeString(hex.EncodeToString([]byte(a)))
+	bb, _ := hex.DecodeString(hex.EncodeToString([]byte(b)))
+	return calculateHammingDistance(aa, bb)
 }
 
 func calculateHammingDistance(a []byte, b []byte) int {
