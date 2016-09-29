@@ -1,11 +1,11 @@
-package breakRepeatingKeyXOR
+package main
 
 import (
 	"encoding/hex"
 	"fmt"
 )
 
-func prereq() bool {
+func Prereq() bool {
 	test := "this is a test"
 	wokka := "wokka wokka!!!"
 	expected := 37
