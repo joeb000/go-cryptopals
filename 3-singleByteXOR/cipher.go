@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 )
@@ -14,8 +15,8 @@ func main() {
 	for i := 0; i < 256; i++ {
 		str := xor(hexInBytes, byte(i))
 		//fmt.Printf("bytes: %x \n", str)
-		if score(str) > 4 {
-			fmt.Printf("\n\ntext: %q\n\n", str)
+		if altscore(str) > 4 {
+			fmt.Printf("\n\ntext: %q\nscore: %v\n", str, altscore(str))
 
 		}
 	}
@@ -36,6 +37,37 @@ func score(arr []byte) int {
 		if arr[i] == []byte(" ")[0] {
 			it++
 		}
+		if arr[i] == []byte("e")[0] {
+			it++
+		}
+
+	}
+	return it
+}
+
+//see https://picoctf.com/crypto_mats/#substitution
+func altscore(arr []byte) int {
+	it := 0
+	if bytes.Contains(arr, []byte("er")) {
+		it += 2
+	}
+	if bytes.Contains(arr, []byte("of")) {
+		it += 2
+	}
+	if bytes.Contains(arr, []byte("in")) {
+		it += 2
+	}
+	if bytes.Contains(arr, []byte("th")) {
+		it += 2
+	}
+	if bytes.Contains(arr, []byte(" ")) {
+		it++
+	}
+	if bytes.Contains(arr, []byte("e")) {
+		it++
+	}
+	if bytes.Contains(arr, []byte("t")) {
+		it++
 	}
 	return it
 }
