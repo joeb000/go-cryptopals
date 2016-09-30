@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/hex"
 	"fmt"
 )
 
@@ -17,11 +16,7 @@ func main() {
 func repKeyXOR(b, key []byte) []byte {
 	crypt := make([]byte, len(b))
 	for i := 0; i < len(b); i++ {
-		crypt[i] = xor(b[i], key[i%3])
+		crypt[i] = b[i] ^ key[i%3]
 	}
 	return crypt
-}
-
-func xor(b, key byte) byte {
-	return b ^ key
 }
