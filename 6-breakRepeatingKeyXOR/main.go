@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -12,8 +13,12 @@ func main() {
 	if !Prereq() {
 		log.Fatal("Get your shit together dawg!")
 	}
-	bytes := readFileToBytes("6.txt")
+	//bytes := readFileToBytes("6.txt")
+	bytes, _ := ioutil.ReadFile("6.txt")
+
 	strbytes := base64StringtoHex(string(bytes))
+
+	fmt.Printf("data: %x\n", strbytes)
 
 	guessedKeySize := guessKeySize(strbytes)
 	fmt.Printf("Guessed Key Size: %v \n", guessedKeySize)
@@ -33,6 +38,8 @@ func main() {
 	//	fmt.Println("revrsed")
 	//	fmt.Println(arr)
 
+	cipherBytes := make([]byte, guessedKeySize)
+
 	for i := 0; i < len(blockMultiArray[0]); i++ { //size
 		slice := []byte{}
 
@@ -43,18 +50,29 @@ func main() {
 		fmt.Println("--------------------")
 		fmt.Printf("Slice %v: %x\n", i, slice)
 		singleByteXOR(slice)
+		cipherBytes[i] = singleByteXOR(slice)
 	}
+
+	fmt.Println(string(cipherBytes))
+
+	fmt.Printf("\n\nCipherBytes: %x  Cipher %q\n", cipherBytes, cipherBytes)
 
 }
 
-func singleByteXOR(hexbytes []byte) {
+func singleByteXOR(hexbytes []byte) byte {
+	retByte := byte(0)
+	bestScore := 0
 	for i := 0; i < 256; i++ {
 		str := singlexor(hexbytes, byte(i))
 		//fmt.Printf("bytes: %x \n", str)
-		if score_plaintext(str) > 560 {
-			fmt.Printf("\n\ntext: %q\nscore: %v\n byte: %x\n", str, score_plaintext(str), byte(i))
+
+		if score(str) > bestScore {
+			bestScore = score(str)
+			retByte = byte(i)
 		}
 	}
+
+	return retByte
 }
 
 func score(arr []byte) int {
@@ -82,32 +100,6 @@ func score(arr []byte) int {
 	return it
 }
 
-func score_plaintext(pt []byte) int {
-	score := 0
-
-	// iterate over our string and give points to nice chars
-	for _, c := range pt {
-
-		// if its a printable ascii char +1
-		if c > 31 && c < 127 {
-			score += 1
-
-			// we love spaces and e's
-			if c == 32 {
-				score += 2
-			} else if c == 69 || c == 101 {
-				score += 1
-			}
-			if c == 47 {
-				score -= 1
-			}
-		}
-
-	}
-
-	return score
-}
-
 func singlexor(hex []byte, key byte) []byte {
 	res := make([]byte, len(hex))
 
@@ -130,7 +122,6 @@ func splitToBlocks(byteArray []byte, size int) [][]byte {
 	fmt.Printf("val: %x\n", retArr[6][4])
 
 	return retArr
-
 }
 
 func readFileToBytes(filename string) []byte {
@@ -153,12 +144,22 @@ func readFileToBytes(filename string) []byte {
 func guessKeySize(input []byte) int {
 	lowestHam := 100.0 //large number guarunteed to be beaten
 	retval := 0
-	for i := 2; i <= 40; i++ {
+	for i := 6; i <= 40; i++ {
 		//fmt.Printf("slice1: %x   len=%v\n", strbytes[:i], len(strbytes[:i]))
 		//fmt.Printf("slice2: %x   len=%v\n", strbytes[i:2*i], len(strbytes[i:2*i]))
-		ham := calculateHammingDistance(input[:i], input[i:2*i])
+		ham1 := calculateHammingDistance(input[:i], input[i:2*i])
+		fmt.Printf("HAM1: %v\n", ham1)
 
-		normalizedHam := float64(ham) / float64(i)
+		ham2 := calculateHammingDistance(input[i:2*i], input[2*i:3*i])
+		ham3 := calculateHammingDistance(input[2*i:3*i], input[3*i:4*i])
+		ham4 := calculateHammingDistance(input[3*i:4*i], input[4*i:5*i])
+		ham5 := calculateHammingDistance(input[4*i:5*i], input[5*i:6*i])
+		ham6 := calculateHammingDistance(input[5*i:6*i], input[6*i:7*i])
+
+		avgHam := average(float64(ham1), float64(ham2), float64(ham3), float64(ham4), float64(ham5), float64(ham6))
+		normalizedHam := float64(avgHam) / float64(i)
+		fmt.Printf("i: %v avgHame: %v normalized %v\n", i, avgHam, normalizedHam)
+
 		if lowestHam > normalizedHam {
 			lowestHam = normalizedHam
 			retval = i
@@ -171,6 +172,13 @@ func guessKeySize(input []byte) int {
 		//		}
 	}
 	return retval
+}
+func average(xs ...float64) float64 {
+	total := 0.0
+	for _, v := range xs {
+		total += v
+	}
+	return total / float64(len(xs))
 }
 
 // convert base64 encoded string into hex byte array
