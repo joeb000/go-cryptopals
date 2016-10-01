@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/base64"
 	"fmt"
-	//"io/ioutil"
+	"io/ioutil"
 	"log"
 	"os"
 )
@@ -13,8 +13,8 @@ func main() {
 	if !Prereq() {
 		log.Fatal("Get your shit together dawg!")
 	}
-	bytes := readFileToBytes("6.txt")
-	//bytes, _ := ioutil.ReadFile("6.txt")
+	//bytes := readFileToBytes("6.txt")
+	bytes, _ := ioutil.ReadFile("6.txt")
 
 	strbytes := base64StringtoHex(string(bytes))
 
