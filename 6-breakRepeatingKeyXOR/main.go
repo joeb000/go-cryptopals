@@ -101,11 +101,9 @@ func singlexor(hex []byte, key byte) []byte {
 
 func splitToBlocks(byteArray []byte, size int) [][]byte {
 	retArr := [][]byte{}
-	block1 := []byte{}
 	for i := 0; i < (len(byteArray) / size); i++ {
-		block1 = byteArray[i*size : (i*size)+size]
-		retArr = append(retArr, block1)
-
+		block := byteArray[i*size : (i*size)+size]
+		retArr = append(retArr, block)
 	}
 	return retArr
 }
