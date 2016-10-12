@@ -12,14 +12,9 @@ const (
 )
 
 func main() {
-	theBytes, _ := hex.DecodeString(hexStr)
-	tbytes := []byte(hexStr)
-	encoded := base64.StdEncoding.EncodeToString(theBytes)
-	fmt.Printf("bytes: %x, %v \n\n", theBytes, encoded)
-	fmt.Printf("bytes: %x\n", tbytes)
-	b64, _ := base64.StdEncoding.DecodeString(expected)
-
-	fmt.Printf("B64: %x \n", b64)
+	hexToBytes, _ := hex.DecodeString(hexStr)
+	encoded := base64.StdEncoding.EncodeToString(hexToBytes)
+	fmt.Printf("hex: %x \nb64 encoded: %v \n\n", hexToBytes, encoded)
 
 	if encoded == expected {
 		fmt.Println("win")
