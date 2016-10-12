@@ -3,25 +3,26 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"unsafe"
 )
 
 const (
 	feedHex  = "1c0111001f010100061a024b53535009181c"
 	xorStr   = "686974207468652062756c6c277320657965"
-	wordSize = int(unsafe.Sizeof(uintptr(0)))
+	expected = "746865206b696420646f6e277420706c6179"
 )
 
 func main() {
 
-	byteArr, _ := hex.DecodeString(feedHex)
-	byteArr2, _ := hex.DecodeString(xorStr)
+	bytes, _ := hex.DecodeString(feedHex)
+	bytes2, _ := hex.DecodeString(xorStr)
 
-	dest := safeXORBytes(byteArr, byteArr2)
+	dest := safeXORBytes(bytes, bytes2)
 
 	fmt.Printf("XOR result: %x\n", dest)
-	//fmt.Printf("UNsafe: %v \n\n", wordSize)
-	fmt.Printf("Bytes %x\n\n", []byte(" "))
+
+	if fmt.Sprintf("%x", dest) == expected {
+		fmt.Println("win")
+	}
 }
 
 //stolen func from crypto/cipher/xor.go
